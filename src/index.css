@@ -37,3 +37,17 @@ body {
     opacity: .1;
     pointer-events: none;
 } */
+
+/* #sect-3 {
+    background-image: url("./assets/bg-mobile2.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: bottom;
+}
+
+@media screen and (min-width: 640px) {
+    #sect-3 {
+        background-image: url("./assets/bg-desktop2.svg");
+        background-size: cover;
+    }
+} */

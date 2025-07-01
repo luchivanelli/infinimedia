@@ -1,12 +1,14 @@
 import { useEffect, useRef } from "react"
 import { Header } from "./components/Header"
-import gsap from "gsap"
+import { Footer } from "./components/Footer"
 import {ScrollTrigger} from "gsap/ScrollTrigger"
+import { animationEnter, cardsHover } from "./utils/animations"
 import SplitType from "split-type"
-import { animationEnter } from "./utils/animations"
+import gsap from "gsap"
 import badge from "./assets/badge.png"
+import space from "./assets/space.png"
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
 //Limpiar archivo App y pasar contenido a componente Home
 //Empezar con pantalla About
@@ -19,8 +21,10 @@ function App() {
   const h2 = useRef()
   const h5 = useRef()
   const badgeRef = useRef()
+  const isMobile = window.innerWidth < 768
   
   useEffect(()=> {
+    let mm = gsap.matchMedia();
     const textH1 = new SplitType(h1.current, { types: 'words, chars' })
     const textH2 = new SplitType(h2.current, { types: 'words, chars' })
     const textH5 = new SplitType(h5.current, { types: 'words, chars' })
@@ -51,73 +55,133 @@ function App() {
       .to(h1.current, { scale: 1, opacity: 0, ease: "power4.out" })
       .to(h2.current, { y: -50, scale: 1.2, ease: "power4.out" }, "<=")
       .to(".subtitle", { opacity: 1, x: 0, stagger: 0.25 }, "<+=0.3")
-       
 
-    if (window.innerWidth > 768) {
-      gsap.to("#sect-2-title", {
-        y: 100,
-        opacity: 1,
-        scale: 1.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: sect2Ref.current,
-          start: "center bottom",
-          end: "top 200px",
-          scrub: 2,
-        }
+    const gridElements = gsap.utils.toArray(".grid-element")
+
+    mm.add("(max-width: 767px)", () => {
+      gridElements.forEach(element => {
+        gsap.from(element, {
+          scale: 0,
+          opacity: 0,
+          y: 50,
+          duration: 0.4,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: element,
+            start: "top 80%",
+            end: "top 70%",
+            toggleActions: "play none none reverse",
+          }
+        })
       })
-    }
 
-    gsap.from("#sect-2-grid", {
-      y: window.innerWidth > 768 ? -200 : -100,
-      duration: 2,
+      // gsap.to("#img-space", {
+      //   left: "100%",
+      //   top: "60%",
+      //   rotate: 120,
+      //   ease: "power1.in",
+      //   duration: 2.5,
+      //   scrollTrigger: {
+      //     trigger: "#sect-3",
+      //     start: "top 60%",
+      //     end: "top top",
+      //     toggleActions: "restart none none none",
+      //   }
+      // })
+    });
+
+    mm.add("(min-width: 768px)", () => {
+      gridElements.forEach((element, index) => {
+        gsap.from(element, {
+          scale: 0,
+          opacity: 0,
+          duration: 0.75,
+          x: gsap.utils.random(-200, 200),
+          y: gsap.utils.random(-200, 200),
+          ease: "back.out",
+          scrollTrigger: {
+            trigger: "#sect-2-grid",
+            start: "top center",
+            end: "top 40%",
+            toggleActions: "play none none reverse",
+          }
+        })
+      })
+
+      gsap.to("#img-space", {
+      left: "100%",
+      top: "60%",
+      rotate: 120,
+      ease: "power1.in",
+      duration: 2.5,
+      scrollTrigger: {
+        trigger: "#sect-3",
+        start: "top 60%",
+        end: "top top",
+        toggleActions: "restart none none none",
+      }
+    })
+    });
+
+    gsap.from("#sect-2-title", {
+      opacity: 0,
+      y: -200,
+      scale: 0.5,
+      duration: 1,
       ease: "power4.out",
       scrollTrigger: {
-        trigger: sect2Ref.current,
-        start: "top 80%",
-        end: "top 20%",
+        trigger: "#sect-2-title",
+        start: "top 70%",
+        end: "top 80%",
+        toggleActions: "play none none reverse",
       }
     })
 
-    const sect2Timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: sect2Ref.current,
-        start: "bottom bottom",
-        end: "+=2000",
-        scrub: 2,
-        pin: true,
-      },
-      ease: "power4.out"
-    })
+    cardsHover(gridElements)
 
-    sect2Timeline
-      .to(sect2Ref.current, {opacity:0, x: -2000, ease: "power3.out"})
-
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: sect3Ref.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: 2
-      }
-    })
-    .to(sect3Ref.current, {x: 0, y: 0, opacity: 1})
-    
-    gsap.to("#sect-3-content", {
+    gsap.to("#sect-3-content",  {
       opacity: 1,
+      duration: 1,
+      delay: 2,
       scrollTrigger: {
-        trigger: sect3Ref.current,
-        start: "bottom 20%",
-        toggleActions: "play none none reset",
-        scrub: 2
+        trigger: "#sect-3",
+        start: "top 70%",
+        end: "top top",
+        toggleActions: "restart none none reverse",
       }
     })
+
+    gsap.from("#sect-3",  {
+      backgroundColor: "#75b9df",
+      duration: 1,
+      delay: 1,
+      ease: "power1.out",
+      scrollTrigger: {
+        trigger: "#sect-3",
+        start: "top 70%",
+        end: "top top",
+        toggleActions: "restart none none reverse",
+      }
+    })
+
+    gsap.to("#footer-container", {
+      opacity: 1,
+      delay: 3,
+      duration: 1,
+      scrollTrigger: {
+        trigger: "#sect-3",
+        start: "top 70%",
+        end: "top top",
+        toggleActions: "restart none none reverse",
+      }
+    })
+       
 }, [])
 
   
 
   return (
-    <main className="w-full relative">
+    <main className="overscroll-x-none bg-[#07628b] relative">
       <Header/>
       <div className="h-[200vh]">
         <section ref={sect1Ref} id="sect-1" className="h-screen z-20 w-full sticky top-0 flex flex-col justify-center items-center">
@@ -133,26 +197,11 @@ function App() {
           </div>
         </section>
       </div>
-      <div className="h-auto z-20 bg-[#75b9df] flex justify-center px-4 relative">
-        <section ref={sect2Ref} id="sect-2"className="w-full max-w-[1200px] pb-20 sm:pb-[150px] flex flex-col items-center">
-          {/* <img src={space} className="w-[200px] absolute right-0 bottom-0" /> */}
-          <h3 id="sect-2-title" className="text-4xl sm:text-6xl font-semibold text-[#064563] md:opacity-0 text-center pb-12 sm:pb-42">What we do?</h3>
-          <div id="sect-2-grid" className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
-            <div className="md:col-span-4 flex flex-col items-start justify-center bg-[#cde4f1] grid-element p-6 rounded-2xl text-base sm:text-2xl text-[#064563] border-[#064563] border-2 hover:bg-[#b8dcf3] transition-all space-y-4 hover:scale-[103%]">
-              <p>
-                <b>Infini</b> has been solving complex corporate challenges using software
-                for over 25 years.
-              </p>
-              <p>
-                If you think your business could be more efficient, we can probably
-                help you with custom software solutions tailored to your company.
-              </p>
-              <a className="border-[#064563] border-2 cursor-pointer font-semibold py-1 sm:py-2 px-4 rounded-full text-sm sm:text-xl hover:bg-[#064563] hover:text-white transition-all">
-                Read more
-              </a>
-            </div>
+      <section className="bg-[#75b9df] px-4 pt-6 pb-10 sm:pb-24">
+        <h3 id="sect-2-title" className="pb-6 sm:pb-10 text-4xl sm:text-6xl font-semibold text-[#064563] text-center">What we do?</h3>
+        <div id="sect-2-grid" className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full max-w-[1000px] mx-auto">
             <div className="md:col-span-8 space-y-6">
-              <div className="bg-[#cde4f1] grid-element p-6 rounded-2xl text-base sm:text-xl text-[#064563] border-[#064563] border-2 hover:bg-[#b8dcf3] transition-all space-y-2 hover:scale-[103%]">
+              <div className="bg-[#cde4f1] cursor-pointer grid-element p-6 rounded-2xl text-base sm:text-xl text-[#064563] border-[#064563] border-2 hover:bg-[#b8dcf3] transition-all space-y-2 hover:scale-[103%]">
                 <h5 className="text-lg sm:text-2xl font-semibold">Bespoke software</h5>
                 <p>
                   Custom-built software tailored to meet the specific needs of your
@@ -161,7 +210,7 @@ function App() {
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-[#cde4f1] grid-element p-6 rounded-2xl text-base sm:text-xl text-[#064563] border-[#064563] border-2 hover:bg-[#b8dcf3] transition-all space-y-2 hover:scale-[103%]">
+                <div className="bg-[#cde4f1] cursor-pointer grid-element p-6 rounded-2xl text-base sm:text-xl text-[#064563] border-[#064563] border-2 hover:bg-[#b8dcf3] transition-all space-y-2 hover:scale-[103%]">
                   <h5 className="text-lg sm:text-2xl font-semibold">Technology audits</h5>
                   <p>
                     A comprehensive assessment of your current technology
@@ -170,7 +219,7 @@ function App() {
                   </p>
                 </div>
 
-                <div className="bg-[#cde4f1] grid-element p-6 rounded-2xl text-base sm:text-xl text-[#064563] border-[#064563] border-2 hover:bg-[#b8dcf3] transition-all space-y-2 hover:scale-[103%]">
+                <div className="bg-[#cde4f1] cursor-pointer grid-element p-6 rounded-2xl text-base sm:text-xl text-[#064563] border-[#064563] border-2 hover:bg-[#b8dcf3] transition-all space-y-2 hover:scale-[103%]">
                   <h5 className="text-lg sm:text-2xl font-semibold">Software strategy</h5>
                   <p>
                     Strategic planning and guidance to align your business goals with
@@ -180,17 +229,32 @@ function App() {
                 </div>
               </div>
             </div>
+            <div className="md:col-span-4 cursor-pointer flex flex-col items-start justify-center bg-[#cde4f1] grid-element p-6 rounded-2xl text-base sm:text-xl text-[#064563] border-[#064563] border-2 hover:bg-[#b8dcf3] transition-all space-y-4 hover:scale-[103%]">
+              <h5 className="text-lg sm:text-2xl font-semibold">Empowering businesses since 1996</h5>
+              <p>
+                <b>Infini</b> has been solving complex corporate challenges using software
+                for over 25 years.
+              </p>
+              <p>
+                If you think your business could be more efficient, we can probably
+                help you with custom software solutions tailored to your company.
+              </p>
+              <a className="border-[#064563] border-2 cursor-pointer font-semibold py-1 sm:py-1.5 px-4 my-1 rounded-full text-sm sm:text-xl hover:bg-[#064563] hover:text-white transition-all">
+                Read more
+              </a>
+            </div>
           </div>
-        </section>
-      </div>
-      <div className="h-[100vh] bg-[#75b9df] relative flex justify-center items-start">
-        <section ref={sect3Ref} className="h-screen absolute bottom-0 right-0 w-full bg-[#064563] opacity-0 -translate-y-[100vh] translate-x-[100vw]">
-          <div id="sect-3-content" className="text-center sm:text-start flex flex-col justify-center items-center opacity-0 h-full">
-              <h5 ref={h5} className="text-4xl sm:text-6xl text-white font-bold">LET’S BUILD TOGETHER</h5>
-              <p className="text-[#75b9df] text-2xl sm:text-4xl">From vision to execution — we make your ideas work.</p>
-              <a href="#" className="text-white font-semibold text-lg sm:text-2xl mt-10 py-1 sm:py-2 px-5 border-2 border-white rounded-full hover:bg-white hover:text-[#064563] transition-all">Get started</a>
-          </div>
-        </section>
+      </section>
+      <section id="sect-3" className="h-screen relative w-full px-4">
+        <img src={space} id="img-space" className="w-[150px] sm:w-[300px] rotate-150 absolute top-40 -left-[50%] sm:-left-[30%]" />
+        <div id="sect-3-content" className="opacity-0 text-center sm:text-start flex flex-col justify-center items-center h-full">
+            <h5 ref={h5} className="text-4xl sm:text-6xl text-white font-bold">LET’S BUILD TOGETHER</h5>
+            <p className="text-[#75b9df] text-2xl sm:text-4xl">From vision to execution — we make your ideas work.</p>
+            <a href="#" className="text-white font-semibold text-lg sm:text-2xl mt-10 py-1 sm:py-2 px-5 border-2 border-white rounded-full hover:bg-white hover:text-[#064563] transition-all">Get started</a>
+        </div>
+      </section>
+      <div id="footer-container" className="opacity-0">
+        <Footer/>
       </div>
     </main>
   )

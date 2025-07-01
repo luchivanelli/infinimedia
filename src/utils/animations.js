@@ -47,3 +47,30 @@ export const animationEnter = (text)=> {
         char.addEventListener("mouseenter", charsHover);
     })
 }
+
+export const cardsHover = (cards)=> {
+    cards.forEach(card => {
+        const tl = gsap.timeline({ paused: true });
+
+        tl.to(card, {
+            scale: 1.05,
+            backgroundColor: "#75b9df",
+            duration: 0.01,
+            ease: "power1.in"
+        });
+
+        card.addEventListener("mouseenter", () => {
+            tl.play();
+        });
+
+        card.addEventListener("mouseleave", () => {
+            gsap.to(card, {
+            scale: 1,
+            backgroundColor: "#cde4f1",
+            duration: 0.1,
+            ease: "back.out(1.7)"
+            });
+            tl.pause(0);
+        });
+    });
+}
